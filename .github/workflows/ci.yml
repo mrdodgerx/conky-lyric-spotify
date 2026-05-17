@@ -1,0 +1,28 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check Python syntax
+        run: python3 -m py_compile spotify_karaoke.py
+
+      - name: Check shell syntax
+        run: bash -n conky-startup.sh
+
+      - name: Validate Conky config syntax
+        run: |
+          for f in LyricsKaraoke LyricsKaraokeRight; do
+            echo "Checking $f..."
+            # Basic validation: ensure required fields exist
+            grep -q "update_interval" "$f" || { echo "Missing update_interval"; exit 1; }
+            grep -q "TEXT" "$f" || { echo "Missing TEXT section"; exit 1; }
+          done

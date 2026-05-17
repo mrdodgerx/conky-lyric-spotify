@@ -1,0 +1,79 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set version from tag
+        run: echo "VERSION=${GITHUB_REF_NAME#v}" >> $GITHUB_ENV
+
+      - name: Create package directory
+        run: |
+          PKG="conky-lyric-spotify-${{ env.VERSION }}"
+          mkdir -p "/tmp/$PKG"
+          cp spotify_karaoke.py conky-startup.sh LyricsKaraoke LyricsKaraokeRight \
+             README.md CHANGELOG.md LICENSE .env.example "/tmp/$PKG/"
+          cp -r .opencode "/tmp/$PKG/"
+          echo "Packaging $PKG"
+
+      - name: Create tar.gz archive
+        run: |
+          PKG="conky-lyric-spotify-${{ env.VERSION }}"
+          cd /tmp && tar czf "${PKG}.tar.gz" "$PKG"
+
+      - name: Create zip archive
+        run: |
+          PKG="conky-lyric-spotify-${{ env.VERSION }}"
+          cd /tmp && zip -r "${PKG}.zip" "$PKG"
+
+      - name: Create PKGBUILD
+        run: |
+          PKG="conky-lyric-spotify-${{ env.VERSION }}"
+          cat > /tmp/PKGBUILD << 'PKGBUILD'
+# Maintainer: MrDodgerX
+pkgname=conky-lyric-spotify
+pkgver=${{ env.VERSION }}
+pkgrel=1
+pkgdesc="Real-time synced Spotify lyrics with karaoke-style highlighting for Conky"
+arch=('any')
+url="https://github.com/mrdodgerx/conky-lyric-spotify"
+license=('MIT')
+depends=('conky' 'playerctl' 'python')
+source=("${pkgname}-${pkgver}.tar.gz::https://github.com/mrdodgerx/conky-lyric-spotify/archive/v${pkgver}.tar.gz")
+sha256sums=('SKIP')
+package() {
+  install -Dm755 spotify_karaoke.py "${pkgdir}/usr/share/conky-lyric-spotify/spotify_karaoke.py"
+  install -Dm755 conky-startup.sh "${pkgdir}/usr/share/conky-lyric-spotify/conky-startup.sh"
+  install -Dm644 LyricsKaraoke "${pkgdir}/usr/share/conky-lyric-spotify/LyricsKaraoke"
+  install -Dm644 LyricsKaraokeRight "${pkgdir}/usr/share/conky-lyric-spotify/LyricsKaraokeRight"
+}
+PKGBUILD
+          echo "PKGBUILD created"
+
+      - name: Generate checksums
+        run: |
+          cd /tmp
+          sha256sum conky-lyric-spotify-${{ env.VERSION }}.tar.gz > conky-lyric-spotify-${{ env.VERSION }}.tar.gz.sha256
+          sha256sum conky-lyric-spotify-${{ env.VERSION }}.zip > conky-lyric-spotify-${{ env.VERSION }}.zip.sha256
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: "v${{ env.VERSION }}"
+          body_path: CHANGELOG.md
+          files: |
+            /tmp/conky-lyric-spotify-${{ env.VERSION }}.tar.gz
+            /tmp/conky-lyric-spotify-${{ env.VERSION }}.tar.gz.sha256
+            /tmp/conky-lyric-spotify-${{ env.VERSION }}.zip
+            /tmp/conky-lyric-spotify-${{ env.VERSION }}.zip.sha256
+            /tmp/PKGBUILD

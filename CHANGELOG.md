@@ -14,6 +14,11 @@
 - Sarasa Mono J font for CJK character support
 - Auto-start via bspwmrc / conky-startup.sh
 
+### CI/CD
+- GitHub Actions CI: Python syntax + shell syntax + Conky config checks
+- GitHub Actions Release: auto-builds tar.gz, zip, PKGBUILD on version tags
+- Auto-generated SHA256 checksums for all release artifacts
+
 ### Dependencies
 - Python 3.8+
 - playerctl
