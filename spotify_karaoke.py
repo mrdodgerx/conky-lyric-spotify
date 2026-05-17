@@ -2,6 +2,9 @@
 import json, os, subprocess, urllib.request, urllib.parse, re, hashlib, textwrap
 
 MAX_CHARS = 40
+HINT_FONT = "Noto Sans Devanagari:size=12"
+BASE_FONT = "Sarasa Mono J:size=12"
+DEVANAGARI_RE = re.compile(r'[\u0900-\u097F]')
 
 CACHE_DIR = os.path.expanduser("~/.cache/spotify_lyrics")
 os.makedirs(CACHE_DIR, exist_ok=True)
@@ -61,6 +64,11 @@ def get_current(lines, pos):
     return best
 
 def main():
+    def wrap_font(text, prefix, suffix):
+        if DEVANAGARI_RE.search(text):
+            return "${font " + HINT_FONT + "}" + prefix + text + suffix + "${font " + BASE_FONT + "}"
+        return prefix + text + suffix
+
     track_id = pctl(["metadata", "mpris:trackid"])
     if not track_id:
         print("${color2}No track playing${color}")
@@ -73,8 +81,8 @@ def main():
         print("${color2}Waiting for track info...${color}")
         return
     data = search_lyrics(artist, title)
-    print(f"${{color0}}{textwrap.fill(title, MAX_CHARS)}${{color}}")
-    print(f"${{color2}}{textwrap.fill(artist, MAX_CHARS)}${{color}}")
+    print(wrap_font(textwrap.fill(title, MAX_CHARS), "${color0}", "${color}"))
+    print(wrap_font(textwrap.fill(artist, MAX_CHARS), "${color2}", "${color}"))
     if length > 0:
         prog = int((pos / length) * 40)
         bar = "${color0}" + "─" * prog + "${color2}" + "─" * (40 - prog) + "${color}"
@@ -104,15 +112,15 @@ def main():
             wrapped = textwrap.fill(text, MAX_CHARS - 4).split("\n")
             for j, line in enumerate(wrapped):
                 pfx = "  \u25b6 " if j == 0 else "     "
-                print(f"${{color3}}{pfx}{line}${{color}}")
+                print(wrap_font(line, "${color3}" + pfx, "${color}"))
         elif i < current:
             wrapped = textwrap.fill(text, MAX_CHARS - 4).split("\n")
             for line in wrapped:
-                print(f"${{color2}}    {line}${{color}}")
+                print(wrap_font(line, "${color2}    ", "${color}"))
         else:
             wrapped = textwrap.fill(text, MAX_CHARS - 4).split("\n")
             for line in wrapped:
-                print(f"${{color1}}    {line}${{color}}")
+                print(wrap_font(line, "${color1}    ", "${color}"))
 
 if __name__ == "__main__":
     main()
