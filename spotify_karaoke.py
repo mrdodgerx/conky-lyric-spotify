@@ -103,7 +103,7 @@ def main():
         if i == current:
             wrapped = textwrap.fill(text, MAX_CHARS - 4).split("\n")
             for j, line in enumerate(wrapped):
-                pfx = "  \u276f " if j == 0 else "     "
+                pfx = "  \u25b6 " if j == 0 else "     "
                 print(f"${{color3}}{pfx}{line}${{color}}")
         elif i < current:
             wrapped = textwrap.fill(text, MAX_CHARS - 4).split("\n")
