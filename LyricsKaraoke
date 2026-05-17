@@ -1,0 +1,32 @@
+# Spotify Synced Lyrics
+update_interval 1
+total_run_times 0
+imlib_cache_size 0
+double_buffer yes
+no_buffers yes
+use_xft yes
+xftfont Sarasa Mono J:size=12
+override_utf8_locale yes
+text_buffer_size 4096
+own_window yes
+own_window_type desktop
+own_window_transparent yes
+own_window_hints undecorated,sticky,skip_taskbar,skip_pager
+alignment top_right
+gap_x 20
+gap_y 50
+minimum_size 400 0
+maximum_width 400
+draw_shades no
+default_color ffffff
+default_shade_color 000000
+color0 00d9ff
+color1 ffffff
+color2 666666
+color3 ff8400
+own_window_argb_visual yes
+own_window_colour 000000
+own_window_argb_value 0
+
+TEXT
+${execpi 1 python3 /home/mrdodgerx/.conky/spotify_karaoke.py}

@@ -1,0 +1,22 @@
+# Cache
+*.pyc
+__pycache__/
+.cache/
+spotify_lyrics_cache/
+
+# Environment
+.env
+.env.local
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
