@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import json, os, subprocess, urllib.request, urllib.parse, re, hashlib, textwrap
 
-MAX_CHARS = 52
+MAX_CHARS = 40
 
 CACHE_DIR = os.path.expanduser("~/.cache/spotify_lyrics")
 os.makedirs(CACHE_DIR, exist_ok=True)

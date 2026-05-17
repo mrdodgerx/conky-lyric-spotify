@@ -15,8 +15,8 @@ own_window_hints undecorated,sticky,skip_taskbar,skip_pager
 alignment top_right
 gap_x 60
 gap_y 50
-minimum_size 400 0
-maximum_width 400
+minimum_size 300 0
+maximum_width 300
 draw_shades no
 default_color ffffff
 default_shade_color 000000
