@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-import json, os, subprocess, urllib.request, urllib.parse, re, hashlib
+import json, os, subprocess, urllib.request, urllib.parse, re, hashlib, textwrap
+
+MAX_CHARS = 52
 
 CACHE_DIR = os.path.expanduser("~/.cache/spotify_lyrics")
 os.makedirs(CACHE_DIR, exist_ok=True)
@@ -71,8 +73,8 @@ def main():
         print("${color2}Waiting for track info...${color}")
         return
     data = search_lyrics(artist, title)
-    print("${color0}" + title + "${color}")
-    print("${color2}" + artist + "${color}")
+    print(f"${{color0}}{textwrap.fill(title, MAX_CHARS)}${{color}}")
+    print(f"${{color2}}{textwrap.fill(artist, MAX_CHARS)}${{color}}")
     if length > 0:
         prog = int((pos / length) * 40)
         bar = "${color0}" + "─" * prog + "${color2}" + "─" * (40 - prog) + "${color}"
@@ -99,11 +101,18 @@ def main():
     for i in range(start, end):
         _, text = lines[i]
         if i == current:
-            print("${color3}  \u276f " + text + "${color}")
+            wrapped = textwrap.fill(text, MAX_CHARS - 4).split("\n")
+            for j, line in enumerate(wrapped):
+                pfx = "  \u276f " if j == 0 else "     "
+                print(f"${{color3}}{pfx}{line}${{color}}")
         elif i < current:
-            print("${color2}    " + text + "${color}")
+            wrapped = textwrap.fill(text, MAX_CHARS - 4).split("\n")
+            for line in wrapped:
+                print(f"${{color2}}    {line}${{color}}")
         else:
-            print("${color1}    " + text + "${color}")
+            wrapped = textwrap.fill(text, MAX_CHARS - 4).split("\n")
+            for line in wrapped:
+                print(f"${{color1}}    {line}${{color}}")
 
 if __name__ == "__main__":
     main()
